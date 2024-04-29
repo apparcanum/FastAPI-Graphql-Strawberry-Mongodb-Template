@@ -1,0 +1,36 @@
+version: '3.8'
+
+volumes:
+    mongo_data:
+
+
+services:
+    mongo:
+        image: mongo:4.4.18
+        volumes:
+            - mongo_data:/data/db
+        env_file:
+            - ./.env
+        ports:
+            - 27017:27017
+        restart: unless-stopped
+
+    mongo-express:
+        image: mongo-express:latest
+        ports:
+            - 8081:8081
+        depends_on:
+            - mongo
+        env_file:
+            - ./.env
+
+    template:
+        build: ./template
+        env_file:
+            - ./.env
+        ports:
+            - 80:80
+        volumes:
+            - ./template:/code/app
+        depends_on:
+            - mongo
